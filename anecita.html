@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Botella interactiva</title>
+<style>
+    body{
+        background: #fff;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        flex-direction: column;
+        height:100vh;
+        font-family: sans-serif;
+        user-select:none;
+    }
+    h2{
+        position: relative;
+        top: -60px; /* SOLO el texto sube */
+    }
+    .contenedor{
+        display:flex;
+        gap:60px;
+        align-items:flex-end;
+
+    }
+
+    /* ✅ TU BOTELLA ORIGINAL */
+    .botella{
+        position: relative;
+        width: 180px;
+        height: 500px;
+        cursor:pointer;
+    }
+
+    .sombra{
+        position:absolute;
+        bottom:-20px;
+        left:50%;
+        width:220px;
+        height:50px;
+        background: radial-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0));
+        border-radius:50%;
+        transform:translateX(-50%);
+        filter: blur(6px);
+    }
+
+    .cuerpo{
+        position:absolute;
+        bottom:0;
+        width:100%;
+        height:380px;
+        background: linear-gradient(#0b3a28, #042b1c 40%, #041c12);
+        border-bottom-left-radius: 80px;
+        border-bottom-right-radius: 80px;
+        border-top-left-radius: 40px;
+        border-top-right-radius: 40px;
+        z-index:1;
+        overflow:hidden;
+    }
+
+    .vino{
+        position:absolute;
+        bottom:0;
+        width:100%;
+        height:350px;
+        background: linear-gradient(#3b0a0a, #2b0606);
+        border-bottom-left-radius:80px;
+        border-bottom-right-radius:80px;
+        opacity:0.9;
+        transition:height 0.6s;
+        z-index:3;
+    }
+
+    /* ✅ TEXTO DENTRO DE LA BOTELLA DETRÁS DEL VINO */
+    .mensaje{
+        position:absolute;
+        top: 140px;           /* empieza arriba escondido */
+        left: 10%%;
+        width:100%;
+        text
+        font-size:18px;
+        color:#f8e5b9;
+        padding:20px;
+        line-height:22px;
+        z-index:1;            /* DETRÁS del vino */
+        transition: top 0.6s;
+        opacity:0.8;
+    }
+
+    .brillo{
+        position:absolute;
+        bottom:10px;
+        left:30px;
+        width:18px;
+        height:340px;
+        background:linear-gradient(white, rgba(255,255,255,0.0));
+        border-radius:60px;
+        opacity:0.35;
+        filter: blur(1px);
+        z-index:5;
+    }
+
+    .cuello{
+        position:absolute;
+        bottom:360px;
+        left:50%;
+        width:65px;
+        height:120px;
+        background: linear-gradient(#0b3a28, #06271b);
+        border-radius:30px;
+        transform:translateX(-50%);
+        z-index:1;
+    }
+
+    .boca{
+        position:absolute;
+        bottom:440px;
+        left:50%;
+        width:95px;
+        height:42px;
+        background:rgb(245,245,245);
+        border-radius:50%;
+        transform:translateX(-50%);
+        z-index:3;
+    }
+
+    .corcho{
+        position:absolute;
+        bottom:470px;
+        left:50%;
+        width:55px;
+        height:70px;
+        background: linear-gradient(#b98a5a, #9a6f44);
+        border-radius:12px;
+        transform:translateX(-50%);
+        z-index:4;
+        box-shadow:0 4px 8px rgba(0,0,0,0.4);
+    }
+
+    .vaso{
+        width:120px;
+        height:180px;
+        border:3px solid #999;
+        border-radius:0 0 40px 40px;
+        position:relative;
+        overflow:hidden;
+        cursor:pointer;
+    }
+
+    .vinoVaso{
+        position:absolute;
+        bottom:0;
+        width:100%;
+        height:0;
+        background:linear-gradient(#6b0000,#2a0000);
+        transition:height 0.6s;
+    }
+
+    .chorro{
+        position:absolute;
+        width:20px;
+        background:linear-gradient(#6b0000,#2a0000);
+        left:302px;
+        transform:translateX(-50%);
+        bottom:80px;
+        height:0;
+        border-radius:10px;
+        transition:height 0.6s;
+        z-index:10;
+        display:none;
+    }
+
+</style>
+</head>
+
+<body>
+
+<h2>Toca la botella corazón</h2>
+
+<div class="contenedor">
+
+    <div class="botella" id="botella">
+        <div class="corcho"></div>
+        <div class="boca"></div>
+        <div class="cuello"></div>
+
+        <div class="cuerpo">
+            
+            <div class="mensaje" id="mensaje">
+                My dear aneth, if you<br>
+               need help, if you feel<br>
+               depressed, <br>
+               I´m here, always<br> for you<br>
+               <br>
+               <br>
+               <br>
+               The best thing about <br>
+               of wine, is that <br>
+               i can drink it with you <br>
+               <br>
+               <br>
+
+               
+                TU ´BURNI❤<br>
+            </div>
+
+            <div class="vino" id="vinoBotella"></div>
+            <div class="brillo"></div>
+        </div>
+
+        <div class="chorro" id="chorro"></div>
+        <div class="sombra"></div>
+    </div>
+
+    <div class="vaso" id="vaso">
+        <div class="vinoVaso" id="vinoVaso"></div>
+    </div>
+
+</div>
+
+<script>
+    const vinoBotella = document.getElementById("vinoBotella");
+    const vinoVaso = document.getElementById("vinoVaso");
+    const chorro = document.getElementById("chorro");
+    const mensaje = document.getElementById("mensaje");
+
+    let nivelBotella = 350;
+    let nivelVaso = 0;
+    const topeVaso = 180;
+
+    document.getElementById("botella").addEventListener("click", () => {
+        if(nivelBotella > 0 && nivelVaso < topeVaso){
+            nivelBotella -= 15;
+            vinoBotella.style.height = nivelBotella + "px";
+
+            nivelVaso += 15;
+            vinoVaso.style.height = nivelVaso + "px";
+
+            chorro.style.display = "block";
+            chorro.style.height = "120px";
+
+            // ✅ mover el texto hacia abajo a medida que se sirve
+            mensaje.style.top = (nivelBotella - 200) + "px";
+
+            setTimeout(() => {
+                chorro.style.height = "0px";
+                setTimeout(() => chorro.style.display = "none", 400);
+            }, 600);
+        }
+    });
+
+    document.getElementById("vaso").addEventListener("click", () => {
+        if(nivelVaso > 0){
+            nivelVaso = 0;
+            vinoVaso.style.height = "0px";
+        }
+    });
+</script>
+
+</body>
+</html>
